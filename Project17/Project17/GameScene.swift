@@ -24,6 +24,7 @@ class GameScene: SKScene {
     var isGameOver = false
     //Ejecuta codigo despues de un lapso de tiempo
     var gameTimer: Timer?
+    var timer = 1.0
     
     override func didMove(to view: SKView) {
         backgroundColor = .black
@@ -51,7 +52,11 @@ class GameScene: SKScene {
         physicsWorld.gravity = CGVector(dx: 0, dy: 0)
         physicsWorld.contactDelegate = self
         
-        gameTimer = Timer.scheduledTimer(timeInterval: 0.35, target: self, selector: #selector(createEnemy), userInfo: nil, repeats: true)
+        setupTimer()
+    }
+    
+    private func setupTimer() {
+        gameTimer = Timer.scheduledTimer(timeInterval: timer, target: self, selector: #selector(createEnemy), userInfo: nil, repeats: true)
     }
     
     @objc func createEnemy() {
@@ -71,15 +76,19 @@ class GameScene: SKScene {
     }
     
     override func update(_ currentTime: TimeInterval) {
-        // Called before each frame is rendered
         for node in children {
-                if node.position.x < -300 {
+                if node.position.x < -100 {
                     node.removeFromParent()
+                    if !isGameOver {
+                        score += 1
+                        if score % 20 == 0 {
+                            print("20")
+                            timer -= 0.1
+                            gameTimer?.invalidate()
+                            setupTimer()
+                        }
+                    }
                 }
-            }
-
-            if !isGameOver {
-                score += 1
             }
     }
     
@@ -105,7 +114,8 @@ extension GameScene: SKPhysicsContactDelegate {
         addChild(explosion)
 
         player.removeFromParent()
-
+        
         isGameOver = true
+        gameTimer?.invalidate()
     }
 }
