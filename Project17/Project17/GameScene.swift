@@ -82,7 +82,6 @@ class GameScene: SKScene {
                     if !isGameOver {
                         score += 1
                         if score % 20 == 0 {
-                            print("20")
                             timer -= 0.1
                             gameTimer?.invalidate()
                             setupTimer()
@@ -103,6 +102,13 @@ class GameScene: SKScene {
         }
 
         player.position = location
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard !isGameOver else {
+            return
+        }
+        didBegin(SKPhysicsContact.init())
     }
 }
 
